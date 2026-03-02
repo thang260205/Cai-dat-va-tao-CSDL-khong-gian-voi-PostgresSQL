@@ -1,31 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8" />
-<title>Garbage Map</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<meta charset="utf-8"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<style>
-#map { height: 100vh; }
-</style>
 </head>
 <body>
-
-<div id="map"></div>
+<div id="map" style="height:100vh;"></div>
 
 <script>
-var map = L.map('map').setView([18.208,108.722], 14)
+const map = L.map('map').setView([21.03,105.85], 13)
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+.addTo(map)
 
-fetch("Garbage.json")
+fetch('http://localhost:3000/garbadge')
 .then(res => res.json())
 .then(data => {
-    L.geoJSON(data, {
-        onEachFeature: function (feature, layer) {
-            layer.bindPopup("GID: " + feature.properties.gid)
-        }
-    }).addTo(map)
+    L.geoJSON(data).addTo(map)
 })
 </script>
 
