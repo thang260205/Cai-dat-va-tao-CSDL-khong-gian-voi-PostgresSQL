@@ -4,29 +4,24 @@ const cors = require('cors')
 
 const app = express()
 app.use(cors())
+app.use(express.static(__dirname))
 
 const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'kcn',
-  password: '123',
-  port: 5432
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
 })
 
 app.get('/all', async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT json_build_object(
-        'type', 'FeatureCollection',
-        'features', json_agg(
+        'type','FeatureCollection',
+        'features',json_agg(
           json_build_object(
-            'type', 'Feature',
-            'geometry',
-              ST_AsGeoJSON(
-                ST_Transform(geom,4326)
-              )::json,
-            'properties', json_build_object(
-              'layer', type
+            'type','Feature',
+            'geometry',ST_AsGeoJSON(ST_Transform(geom,4326))::json,
+            'properties',json_build_object(
+              'layer',type
             )
           )
         )
@@ -45,9 +40,9 @@ app.get('/all', async (req, res) => {
     `)
 
     res.json(result.rows[0].json_build_object)
-  } catch (err) {
-    res.status(500).json({ error: err.message })
+  } catch(err) {
+    res.status(500).json({error: err.message})
   }
 })
 
-app.listen(3000)
+app.listen(process.env.PORT || 3000)
